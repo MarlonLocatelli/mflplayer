@@ -12,35 +12,34 @@ class MovieListView extends GetView<MovieController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Canais ao vivo'),
+          title: const Text('Filmes'),
           centerTitle: true,
         ),
-        body: GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2 colunas
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 2.5,
-          ),
-          itemCount: movieController.groupTitlesMovies.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                movieController.setGroupTitle(movieController.groupTitlesMovies[index]);
-                Get.toNamed(Routes.MOVIE_LIST_DETAILS);
-              },
-              child: Card(
-                elevation: 2,
-                child: Center(
-                  child: Text(
-                    movieController.groupTitlesMovies[index],
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ),),
-            );
-          },)
+        body: Obx(() =>
+          ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: movieController.listDetailsTitles.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  movieController.setGroupTitle(movieController.listDetailsTitles[index].groupTitle);
+                  Get.toNamed(Routes.MOVIE_LIST_DETAILS);
+                },
+                child: Card(
+                  elevation: 2,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Center(
+                      child: Text(
+                        movieController.listDetailsTitles[index].groupTitle ?? '',
+                        style: const TextStyle(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),),
+              );
+            },),
+        )
     );
   }
 }

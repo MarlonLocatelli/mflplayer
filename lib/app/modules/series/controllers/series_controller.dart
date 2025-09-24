@@ -1,21 +1,22 @@
 import 'package:get/get.dart';
-import 'package:m3u_parser_nullsafe/m3u_parser_nullsafe.dart';
-import 'package:mflplayer/app/modules/home/controllers/home_controller.dart';
+import 'package:mflplayer/app/data/dao/m3u_item_dao.dart';
+import 'package:mflplayer/app/data/model/m3u_item.dart';
 
 class SeriesController extends GetxController {
 
-  final HomeController _homeController = Get.find<HomeController>();
-
+  final _m3uDao = Get.find<M3UItemDao>();
   final groupTitle = ''.obs;
+  final listDetailsTitles = <M3UItem>[].obs;
+  final listSeries = <M3UItem>[].obs;
 
-  List<String> get groupTitlesSeries =>
-      _homeController.groupTitlesSeries;
+  void loadSeries() async {
+    var channels = await _m3uDao.getItemsByGroupTitle(groupTitle.value);
+    listSeries.assignAll(channels);
+  }
 
-  List<M3uItem> get detailsGroupTitles {
-    return _homeController.m3uList?.items
-        .where((item) => item.groupTitle == groupTitle.value)
-        .toList() ??
-        [];
+  void initListDetailsTitles(String? group) async {
+    var items = await _m3uDao.getItemsByGroupTitleWithGroupBy(group ?? groupTitle.value);
+    listDetailsTitles.assignAll(items);
   }
 
   void setGroupTitle(String title) {
@@ -25,6 +26,7 @@ class SeriesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    initListDetailsTitles("series");
   }
 
   @override

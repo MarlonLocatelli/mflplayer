@@ -1,26 +1,47 @@
 import 'dart:io';
 
+import 'package:get/get.dart';
 import 'package:dio/dio.dart';
+import 'package:mflplayer/app/data/dao/m3u_item_dao.dart';
+import 'package:mflplayer/app/data/model/m3u_item.dart';
 import 'package:mflplayer/app/data/services/auth_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AuthRepository {
-  AuthRepository();
+  final M3UItemDao _m3uDao = Get.find<M3UItemDao>();
 
   Future<bool> createFile(String baseUrl) async {
 
     //print("URL: $baseUrl");
     AuthService service = AuthService(Dio(), baseUrl: baseUrl);
 
+    // Request para baixar o arquivo M3U
     var result = await service.fromUrlM3u();
 
     // Verifica se a resposta foi bem-sucedida
-    if (result.response.statusCode == 200) {
-      print("RESULT ok");
-      return await saveFilePlaylist(result.data);
+    if (result.response.statusCode == 200 && result.data.isNotEmpty) {
+      // Parse do result
+      var listItems = M3UItem.parseM3U(result.data);
+      print("TEM ITENS ${listItems.length}");
+
+      if (listItems.isNotEmpty) {
+        // Salva o arquivo em cache
+        _m3uDao.insertBatchPartitioned(listItems);
+        return true;
+      }
+    } else {
+      Get.showSnackbar(GetSnackBar(
+        title: 'Erro',
+        message: 'Falha ao carregar a playlist. Verifique a URL.',
+        duration: Duration(seconds: 3),
+      ));
     }
 
     return false;
+  }
+
+  Future<bool> checkExistData() async {
+    return await _m3uDao.hasData();
   }
 
   // Método para salvar o arquivo baixado em cache
@@ -61,7 +82,7 @@ class AuthRepository {
     }
   }
 
-  Future<bool> existsFilePlaylist() async {
+  Future<bool> existsPlaylist() async {
     try {
       var filePath = await getFilePath();
 

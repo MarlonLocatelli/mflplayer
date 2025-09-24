@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:m3u_parser_nullsafe/m3u_parser_nullsafe.dart';
+import 'package:mflplayer/app/data/model/m3u_item.dart';
 import 'package:mflplayer/app/modules/series/controllers/series_controller.dart';
 import 'package:mflplayer/app/routes/app_pages.dart';
 
@@ -12,34 +12,38 @@ class SeriesListDetailsView extends GetView {
 
   @override
   Widget build(BuildContext context) {
+
+    seriesController.loadSeries();
+
     return Scaffold(
         appBar: AppBar(
           title: Obx(() => Text(seriesController.groupTitle.value)),
           centerTitle: true,
         ),
-        body: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: seriesController.detailsGroupTitles.length,
-          itemBuilder: (context, index) {
-            M3uItem channel = seriesController.detailsGroupTitles[index];
-            return GestureDetector(
-              onTap: () {
-                Get.toNamed(Routes.PLAYER, arguments: {
-                  'videoUrl': channel.link,
-                  'channelName': channel.title
-                });
-              },
-              child: Card(
-                elevation: 2,
-                child: Center(
-                  child: Text(
-                    channel.title,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ),),
-            );
-          },)
+        body: Obx(() => ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: seriesController.listSeries.length,
+            itemBuilder: (context, index) {
+              M3UItem channel = seriesController.listSeries[index];
+              return GestureDetector(
+                onTap: () {
+                  Get.toNamed(Routes.PLAYER, arguments: {
+                    'videoUrl': channel.url,
+                    'channelName': channel.name
+                  });
+                },
+                child: Card(
+                  elevation: 2,
+                  child: Center(
+                    child: Text(
+                      channel.name,
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),),
+              );
+            },),
+        )
     );
   }
 }

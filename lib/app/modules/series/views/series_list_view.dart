@@ -18,26 +18,27 @@ class SeriesListView extends GetView<SeriesController> {
           title: const Text('Series'),
           centerTitle: true,
         ),
-        body: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: seriesController.groupTitlesSeries.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                seriesController.setGroupTitle(seriesController.groupTitlesSeries[index]);
-                Get.toNamed(Routes.SERIES_LIST_DETAILS);
-              },
-              child: Card(
-                elevation: 2,
-                child: Center(
-                  child: Text(
-                    seriesController.groupTitlesSeries[index],
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ),),
-            );
-          },)
+        body: Obx(() => ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: seriesController.listDetailsTitles.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  seriesController.setGroupTitle(seriesController.listDetailsTitles[index].groupTitle);
+                  Get.toNamed(Routes.SERIES_LIST_DETAILS);
+                },
+                child: Card(
+                  elevation: 2,
+                  child: Center(
+                    child: Text(
+                      seriesController.listDetailsTitles[index].groupTitle,
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),),
+              );
+            },),
+        )
     );
   }
 }

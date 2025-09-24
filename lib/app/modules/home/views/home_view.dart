@@ -16,6 +16,37 @@ class HomeView extends GetView<HomeController> {
       appBar: AppBar(
         title: const Text('Bem vindo!'),
         centerTitle: true,
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'sair') {
+                // Implemente a lógica de logout aqui
+                await homeController.clearData();
+                Get.offAllNamed(Routes.AUTH);
+              } else if (value == 'configurar') {
+                // Navegue para a tela de configurações
+                Get.toNamed(Routes.SETTINGS);
+              } else if (value == 'atualizar') {
+                // Chame o método de atualização
+                //homeController.atualizar();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'configurar',
+                child: Text('Configurar'),
+              ),
+              const PopupMenuItem(
+                value: 'atualizar',
+                child: Text('Atualizar'),
+              ),
+              const PopupMenuItem(
+                value: 'sair',
+                child: Text('Sair'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: ListView.builder(
         shrinkWrap: true,
